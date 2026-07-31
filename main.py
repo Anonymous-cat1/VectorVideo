@@ -30,6 +30,15 @@ def clean_dir(d):
         shutil.rmtree(d)
 
 def get_optimal_width(base_width_str, video_path, stretch, atlas_w=960, atlas_h=720):
+    """
+    Calculates the mathematically optimal video width to maximize the use of the 
+    image atlas space and minimize wasted alignment padding. 
+    
+    Triggered when the user appends an asterisk to the width (e.g. `240*`). 
+    It iterates over a range (+/- 25%) around the requested width, predicting 
+    the sub-pixel padding for each possible width, and returns the one that 
+    fits the most "real" video pixels on the atlas.
+    """
     base_width_str = str(base_width_str)
     optimize = base_width_str.endswith('*')
     base_w = int(base_width_str.replace('*', ''))
@@ -96,6 +105,16 @@ def get_optimal_width(base_width_str, video_path, stretch, atlas_w=960, atlas_h=
     return best_w
 
 def process_video(video_path, args):
+    """
+    The main compiler pipeline for processing a single video.
+    
+    Workflow:
+    1. Extracts audio chunks and raw video frames in parallel.
+    2. Analyzes frames for detail scaling and performs deduplication.
+    3. Packs the frames into atlas coordinates using a zero-jitter alignment.
+    4. Compiles and exports the final JPEG atlases and generates metadata.
+    5. Optionally injects everything directly into an .sb3 Scratch project file.
+    """
     start_time = time.time()
     video_name = os.path.splitext(os.path.basename(video_path))[0]
     
@@ -199,11 +218,15 @@ def process_video(video_path, args):
                 scratch_size = int(round(S * 10)) * 10
                 S_actual = scratch_size / 100.0
                 
-                # Center of the frame relative to the center of the costume
+                # Center of the frame relative to the center of the costume (atlas)
+                # Since the Scratch costume's rotation center is exactly the middle of the atlas (e.g. 512,512), 
+                # we calculate how far off-center the packed frame's center is.
                 cx_rel = (x + pack_w / 2.0) / 2.0 - (atlas_w / 4.0)
                 cy_rel = (atlas_h / 4.0) - (y + pack_h / 2.0) / 2.0
                 
-                # To bring the frame's center to the stage origin (0,0), move the sprite in the opposite direction
+                # To bring the frame's center to the stage origin (0,0), we must command Scratch 
+                # to move the sprite in the exact opposite direction of its off-center offset, 
+                # scaled up by the stage size multiplier.
                 scratch_x = round(-cx_rel * S_actual)
                 scratch_y = round(-cy_rel * S_actual)
                 
@@ -370,10 +393,10 @@ Developed by Anonymous_cat1 and Google Antigravity.
     parser.add_argument("-f", "--fps", type=int, default=15, metavar="", help="Target FPS (default: 15)")
     parser.add_argument("-w", "--width", type=str, default="240", metavar="", help="Target frame width. Append '*' to the closest resolution that utilizes most of the available atlas space. (default: 240)")
     parser.add_argument("-s", "--stretch", action="store_true", help="Stretch video to 4:3 aspect ratio")
-    parser.add_argument("-q", "--jpeg-quality", type=int, default=80, metavar="", help="JPEG compression quality %% 1-100 (default: 80)")
+    parser.add_argument("-q", "--jpeg-quality", type=int, default=90, metavar="", help="JPEG compression quality %% 1-100 (default: 90)")
     parser.add_argument("-b", "--audio-bitrate", type=str, default="64k", metavar="", help="Audio Bitrate (default: 64k)")
     parser.add_argument("-k", "--audio-khz", type=str, default="22050", metavar="", help="Audio sample rate in Hz (default: 22050)")
-    parser.add_argument("-t", "--threads", type=int, default=max(1, int((os.cpu_count() or 4) * 0.75)), metavar="", help="Number of threads for parallel processing")
+    parser.add_argument("-t", "--threads", type=int, default=max(1, int((os.cpu_count() or 4) * 0.75)), metavar="", help="Number of threads for parallel processing. (default: 75%% of CPU cores)")
     parser.add_argument("-l", "--loudness", type=float, default=1.0, metavar="", help="Volume multiplier for audio extraction (default: 1.0)")
     parser.add_argument("-M", "--maximize-volume", action="store_true", help="Maximize audio volume to 0dB without clipping (peak normalization)")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose logging")

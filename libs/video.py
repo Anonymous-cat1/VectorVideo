@@ -25,6 +25,11 @@ def get_video_dimensions(video_path):
         return 1920, 1080
 
 def extract_sample_frames(video_path, out_dir, duration, width, stretch, count=3):
+    """
+    Extracts a few sample frames evenly spread across the video's duration.
+    This is used by the estimator to gauge the average detail scaling of the 
+    video without having to process all frames.
+    """
     os.makedirs(out_dir, exist_ok=True)
     
     actual_width = min(int(width), 1280)
@@ -50,6 +55,13 @@ def extract_sample_frames(video_path, out_dir, duration, width, stretch, count=3
         ], stdin=subprocess.DEVNULL)
 
 def extract_frames(video_path, fps=15, width=240, stretch=False, threads=4):
+    """
+    Extracts every single frame of the video into memory as raw JPEG bytes.
+    
+    Instead of dumping thousands of JPEGs to the hard drive (which is very slow 
+    and wastes a lot of I/O cycles), we pipe the output of FFmpeg directly 
+    into a byte stream, chunking it at every JPEG start header (`\\xff\\xd8`).
+    """
     actual_width = min(int(width), 1280)
     
     if actual_width != int(width):

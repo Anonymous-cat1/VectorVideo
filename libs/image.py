@@ -20,7 +20,11 @@ def get_folder_size(folder):
     return total_size
 
 def process_packed_image_bin(args):
-    """Worker function to compile a bin of frames into a JPEG and save to a temporary location."""
+    """
+    Worker function to compile a single bin of frames into a JPEG and save to a temporary location.
+    It takes the raw JPEG bytes from memory, resizes them if necessary (due to detail scaling), 
+    and pastes them onto the black atlas background at the coordinates determined by the packer.
+    """
     (costume_id, rects, frame_list, max_atlas_w, max_atlas_h, jpeg_quality, temp_dir) = args
     
     framebuffer = Image.new("RGB", (max_atlas_w, max_atlas_h), (0, 0, 0))
@@ -45,6 +49,14 @@ def process_packed_image_bin(args):
     return costume_id, temp_img_path
 
 def compile_packed_frames(frame_list, packed_results, export_compiled_dir, jpeg_quality=80, max_atlas_w=960, max_atlas_h=720, threads=4, working_dir=".Working"):
+    """
+    Takes the theoretical bin packing coordinates and physically renders the final 
+    JPEG atlas images using the PIL (Pillow) library.
+    
+    After rendering, it sorts the atlases into "Frame Block" folders. 
+    Scratch has a hard limit of 10MB per asset upload. To make manual importing easier, 
+    the compiler groups the atlases into folders that are strictly under 9.75MB each.
+    """
     if not frame_list:
         logger.warning("No frames found to compile.")
         return None

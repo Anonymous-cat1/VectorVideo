@@ -7,6 +7,12 @@ from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 def dhash(image, hash_size=16):
+    """
+    Computes a Difference Hash (dHash) for an image.
+    dHash works by resizing the image to a small grid and comparing adjacent pixels.
+    This generates a tiny 64-bit integer signature that is extremely fast to compare 
+    and robust against minor compression artifacts.
+    """
     resized = cv2.resize(image, (hash_size + 1, hash_size), interpolation=cv2.INTER_AREA)
     if len(resized.shape) == 3:
         gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
@@ -22,6 +28,14 @@ def dhash(image, hash_size=16):
     return h
 
 def determine_scale(img, img_prev, detail_sensitivity):
+    """
+    Dynamically determines the ideal resolution scaling factor for a specific frame.
+    
+    It analyzes the frame for extreme sharpness (focal points) and motion.
+    High-motion scenes are naturally blurry, so scaling them down saves massive amounts 
+    of atlas space without the user noticing. Static, highly detailed scenes are 
+    preserved at near 100% resolution to maintain crisp visuals.
+    """
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
     # 1. Focal Point Detail
@@ -88,6 +102,13 @@ def process_frame_for_analysis(args):
     return idx, h, target_w, target_h
 
 def analyze_frames(frame_list, base_w, base_h, max_w, max_h, detail_sensitivity=1.0, dedup_tolerance=2.0, threads=4):
+    """
+    Iterates over all extracted video frames in parallel to:
+    1. Determine the optimal downscaled resolution (detail scaling).
+    2. Generate perceptual hashes (dHash) for every frame.
+    3. Identify consecutive duplicate frames and flag them to be skipped during packing.
+       (Skipping duplicates dramatically reduces atlas size and RAM usage during static scenes).
+    """
     logger.info("Analyzing frames for detail scaling and deduplication...")
     
     results = [None] * len(frame_list)

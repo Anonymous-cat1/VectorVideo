@@ -8,6 +8,10 @@ import concurrent.futures
 logger = logging.getLogger(__name__)
 
 def get_video_duration(video_path):
+    """
+    Uses ffprobe to quickly extract the total duration of the video in seconds.
+    This avoids having to decode the entire video just to find out how long it is.
+    """
     result = subprocess.run([
         'ffprobe', '-v', 'error', '-show_entries',
         'format=duration', '-of',
@@ -30,14 +34,14 @@ def get_max_volume(video_path):
 def extract_sample_audio(video_path, out_dir, duration, bitrate, khz, volume, use_limiter=False, mono=False, length=5):
     os.makedirs(out_dir, exist_ok=True)
     t = max(0, (duration - length) / 2)
-    out_file = os.path.join(out_dir, "sample_audio.wav")
+    out_file = os.path.join(out_dir, "sample_audio.mp3")
     
     cmd = [
         'ffmpeg', '-y', '-v', 'error',
         '-ss', str(t),
         '-t', str(length),
         '-i', video_path,
-        '-c:a', 'pcm_s16le',
+        '-b:a', str(bitrate),
         '-ar', str(khz),
         '-map', '0:a?'
     ]
@@ -63,7 +67,7 @@ def extract_audio_chunk(video_path, start_time, out_file, bitrate, khz, volume, 
         '-ss', str(start_time),
         '-t', '15',
         '-i', video_path,
-        '-c:a', 'pcm_s16le',
+        '-b:a', str(bitrate),
         '-ar', str(khz),
         '-map', '0:a?'
     ]
@@ -83,6 +87,14 @@ def extract_audio_chunk(video_path, start_time, out_file, bitrate, khz, volume, 
     subprocess.run(cmd, stdin=subprocess.DEVNULL)
 
 def extract_audio(video_path, export_audio_dir, bitrate="64k", khz="22050", threads=4, volume=1.0, use_limiter=False, mono=False):
+    """
+    Extracts the entire audio track from the video and chunks it into 15-second MP3 files.
+    
+    Why 15 seconds? Scratch has a hard limit of 10MB per asset. Long audio files 
+    can exceed this limit or cause the Scratch VM to run out of memory. 
+    By chunking the audio into small pieces, the Vector Video client can 
+    dynamically load and unload them on the fly.
+    """
     duration = get_video_duration(video_path)
     splits_needed = math.ceil(duration / 15.0)
     
@@ -91,7 +103,7 @@ def extract_audio(video_path, export_audio_dir, bitrate="64k", khz="22050", thre
     cmd = [
         'ffmpeg', '-y',
         '-i', video_path,
-        '-c:a', 'pcm_s16le',
+        '-b:a', str(bitrate),
         '-ar', str(khz),
         '-map', '0:a?'
     ]
@@ -107,7 +119,7 @@ def extract_audio(video_path, export_audio_dir, bitrate="64k", khz="22050", thre
     if mono:
         cmd.extend(['-ac', '1'])
         
-    out_pattern = os.path.join(export_audio_dir, "audio%d.wav")
+    out_pattern = os.path.join(export_audio_dir, "audio%d.mp3")
     cmd.extend([
         '-f', 'segment',
         '-segment_time', '15',

@@ -5,6 +5,19 @@ import math
 logger = logging.getLogger(__name__)
 
 def pack_frames(analysis_results, max_atlas_w=960, max_atlas_h=720):
+    """
+    Packs the downscaled frames into large 2D image atlases to save on Scratch's costume limit.
+    Uses the `rectpack` library to perform 2D bin packing.
+    
+    CRITICAL LOGIC: Zero-Jitter Alignment
+    Scratch forces all sprites onto an absolute integer grid. If we try to render a frame
+    at a sub-pixel location (e.g., X=5.5), Scratch snaps it to an integer (X=6). When 
+    this snapping fluctuates back and forth over consecutive frames, the video "jitters".
+    To completely eliminate this jitter, we mathematically enforce padding onto the 
+    bounding boxes here. This guarantees that when the atlas is scaled down in Scratch,
+    the padded boundaries perfectly lock onto Scratch's integer grid, forcing the true 
+    visual center of the frame to remain mathematically stable.
+    """
     logger.info("Packing frames into Image atlas(es)...")
     
     unique_frames = [r for r in analysis_results if not r["is_duplicate"]]
@@ -24,16 +37,30 @@ def pack_frames(analysis_results, max_atlas_w=960, max_atlas_h=720):
             target_h = frame["h"]
             
             aspect = target_w / float(target_h)
+            
+            # 1. Determine the Scratch Scale Multiplier (S)
+            # This is the multiplier Scratch will use to upscale the frame to fill its 480x360 stage.
             if aspect >= (480.0 / 360.0):
                 S = 960.0 / target_w
             else:
                 S = 720.0 / target_h
                 
+            # 2. Quantize the Scratch Size
+            # To limit the maximum possible padding size, we snap the scale percentage to 
+            # multiples of 10% (e.g. 421% -> 420%).
             scratch_size = int(round(S * 10)) * 10
             S_actual_10 = scratch_size // 10
             
+            # 3. Calculate the Grid Divisor
+            # Using the Greatest Common Divisor (GCD), we determine the smallest 
+            # safe bounding box interval that will divide perfectly into Scratch's integer grid
+            # after being multiplied by our quantized scale.
             D_w = 20 // math.gcd(20, S_actual_10)
             
+            # 4. Apply Padding
+            # We add 2 base pixels for a safety margin (prevents texture bleeding).
+            # Then we add the exact mathematically determined padding (D_w - rem_w) 
+            # to snap the box's edges to the safe interval.
             rem_w = (target_w + 2) % D_w
             P_w = 2 + (D_w - rem_w if rem_w != 0 else 0)
             

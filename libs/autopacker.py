@@ -9,6 +9,10 @@ from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 def md5_file(filepath):
+    """
+    Computes the MD5 hash of a file. Scratch identifies all internal assets 
+    (costumes and sounds) using their MD5 hash as the filename.
+    """
     hash_md5 = hashlib.md5()
     with open(filepath, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
@@ -16,6 +20,15 @@ def md5_file(filepath):
     return hash_md5.hexdigest()
 
 def compile_sb3(base_sb3, export_dir, video_name, compiled_frames_dir, audio_dir):
+    """
+    Automatically injects the compiled video, audio, and metadata into a blank 
+    Vector Video Scratch player (`_VVPlayer_base.sb3`) without requiring the user 
+    to manually upload assets in the Scratch editor.
+    
+    A `.sb3` file is essentially just a `.zip` archive containing a `project.json` 
+    file and all the assets. We extract it, modify the JSON to register our new 
+    WAV/MP3s and JPEGs, copy the physical files over, and re-zip it.
+    """
     logger.info(f"Autopacking into {video_name}.sb3 using base {base_sb3}...")
     
     temp_dir = os.path.join(export_dir, ".temp_sb3")
@@ -98,14 +111,14 @@ def compile_sb3(base_sb3, export_dir, video_name, compiled_frames_dir, audio_dir
         
     # 4. Import Audio
     if os.path.exists(audio_dir):
-        audio_files = sorted([f for f in os.listdir(audio_dir) if f.endswith('.wav')])
+        audio_files = sorted([f for f in os.listdir(audio_dir) if f.endswith('.mp3')])
         # Sort numerically
         audio_files.sort(key=lambda f: int(re.search(r'\d+', f).group()) if re.search(r'\d+', f) else 0)
         
         for audio_file in tqdm(audio_files, desc="Importing Audio"):
             audio_path = os.path.join(audio_dir, audio_file)
             md5 = md5_file(audio_path)
-            ext = ".wav"
+            ext = ".mp3"
             new_filename = f"{md5}{ext}"
             shutil.copy2(audio_path, os.path.join(temp_dir, new_filename))
             
@@ -114,7 +127,7 @@ def compile_sb3(base_sb3, export_dir, video_name, compiled_frames_dir, audio_dir
             sound = {
                 "name": name,
                 "assetId": md5,
-                "dataFormat": "wav",
+                "dataFormat": "mp3",
                 "format": "",
                 "rate": 22050,
                 "sampleCount": 0,
