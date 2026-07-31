@@ -177,7 +177,7 @@ This requires you to upload a blank `_VVPlayer_base` project to scratch and do t
 ### Uploading a compiled project
 > NOTE: Scratch's backend can sometimes create a "phantom project" which **you cannot delete** if you file is abnormally large (+1gb). 
 
-> COMPATIBILITY NOTE: The compiler does not check if the project is uploadable. There may be times where the compiler creates a project that cannot be uploaded to Scratch. See `Limitations` for more information.
+> COMPATIBILITY NOTE: The compiler does not check if the project is uploadable. There may be times where the compiler creates a project that cannot be uploaded to Scratch. See [Limitations](https://github.com/Anonymous-cat1/VectorVideo#Limitations) for more information.
 
 1. Upload your compiled project via the `Load project from computer` option under `file`.
 > NOTE: Your browser might freeze here. That is normal. It should unfreeze within a minute. If not, close your browser and try again with a smaller file.
@@ -193,7 +193,7 @@ The compiler requires:
 - At least 1 GB of free space (to hold exports).
 ## Limitations
 Of course with anything, it has limitations:
-- ~30,000 Frames is the maximum due to a text file size limit (~1.5mb) on Scratch's backend.
+- ~300,000 Frames is the maximum due to a text file size limit (~1.5mb) on Scratch's backend.
 - While you can go higher than 480p@30, there is no gain in doing this as the player cannot show detail higher than that.
 - The player used to use .SVG files (hence the name" Vector video) however, it now uses .JPG files due to RAM usage.
 - Due to using .JPG files instead of a custom renderer like most long form videos players on Scratch do, RAM usage is a major concern.
