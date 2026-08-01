@@ -150,8 +150,8 @@ The compiler supports a wide variety of flags to optimize and customize your out
 
 ---
 ### Resolution & Framing
--  `-w`/`--width <width>`: Set the target frame width (default: 240).
 > "`*`" OPTIMIZER: If you append an asterisk to the width (e.g. `-w 240*`), the compiler will intelligently scan a range +/- 25% around your requested width. It will calculate the mathematically perfect resolution that completely maximizes the atlas packing space while wasting the absolute minimum amount of alignment padding (highly recommended!)
+-  `-w`/`--width <width>`: Set the target frame width (default: 240).
 -  `-s`/`--stretch`: Stretch the video to force a 4:3 aspect ratio (fits the Scratch stage exactly without letterboxing).
 ### Quality & Performance
 -  `-f`/`--fps <fps>`: Target Framerate (default: 15). Lowering FPS is the easiest way to save disk size!
