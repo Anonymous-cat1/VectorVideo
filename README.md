@@ -150,9 +150,9 @@ The compiler supports a wide variety of flags to optimize and customize your out
 
 ---
 ### Resolution & Framing
--  `-w, --width <width>`: Set the target frame width (default: 240).
-> **The `*` Optimizer Feature:** If you append an asterisk to the width (e.g. `-w 240*`), the compiler will intelligently scan a range +/- 25% around your requested width. It will calculate the mathematically perfect resolution that completely maximizes the atlas packing space while wasting the absolute minimum amount of alignment padding (highly recommended!)
--  `-s, --stretch`: Stretch the video to force a 4:3 aspect ratio (fits the Scratch stage exactly without letterboxing).
+-  `-w`/`--width <width>`: Set the target frame width (default: 240).
+> "`*`" OPTIMIZER: If you append an asterisk to the width (e.g. `-w 240*`), the compiler will intelligently scan a range +/- 25% around your requested width. It will calculate the mathematically perfect resolution that completely maximizes the atlas packing space while wasting the absolute minimum amount of alignment padding (highly recommended!)
+-  `-s`/`--stretch`: Stretch the video to force a 4:3 aspect ratio (fits the Scratch stage exactly without letterboxing).
 ### Quality & Performance
 -  `-f`/`--fps <fps>`: Target Framerate (default: 15). Lowering FPS is the easiest way to save disk size!
 -  `-q`/`--jpeg-quality <1-100>`: JPEG compression quality of the atlases (default: 90).
@@ -160,7 +160,7 @@ The compiler supports a wide variety of flags to optimize and customize your out
 -  `-d`/`--dedup <float>`: Deduplication tolerance (default: 2.0). Higher values merge more similar frames (saving space but lowering framerate slightly during slow motion), lower values keep more unique frames.
 ### Audio Settings
 -  `-b`/`--audio-bitrate <string>`: Expected audio bitrate (default: 64k).
--  `-k1`/`--audio-khz <string>`: Audio sample rate in Hz (default: 22050).
+-  `-k`/`--audio-khz <string>`: Audio sample rate in Hz (default: 22050).
 -  `-m`/`--mono`: Downmix the extracted audio to Mono (halves audio file size!).
 -  `-l`/`--loudness <float>`: Volume multiplier for the audio (default: 1.0).
 -  `-M`/`--maximize-volume`: Automatically peak-normalize the audio to 0dB to make it as loud as possible without clipping.
