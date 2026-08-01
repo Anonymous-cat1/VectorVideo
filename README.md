@@ -1,7 +1,7 @@
 # Vector Video Compiler + Client
 > NOTE: For Turbowarp/Turbowarp mod users, there is already a [video extension](https://turbowarp.org/editor?extension=https://extensions.turbowarp.org/Lily/Video.js) that exists in their extension library which does this way better.
  
-Vector video is a high-quality, performant long-form video player built for vanilla Scratch3 VMs. It utilizes the costume renderer along with some clever tricks to get video as high as 360p@30 for minutes (or hours) on end!
+Vector Video is a high-quality, performant long-form video player built for vanilla Scratch3 VMs. It utilizes the costume renderer along with some clever tricks to get video as high as 360p@30 for minutes (or hours) on end!
 
 <img width="196" height="210" alt="SYTEM-Blank-2x" src="https://github.com/user-attachments/assets/a9c07d4d-eedd-4e20-a516-eaabdd5f1d10" />
 
