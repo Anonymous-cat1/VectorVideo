@@ -56,6 +56,7 @@ The compiler supports:
 1. Clone the repository.
 ```bash
 git clone https://github.com/Anonymous-cat1/VectorVideo/
+cd /VectorVideo/
 ```
 2. Install dependencies.
 ```bash
