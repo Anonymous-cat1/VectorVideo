@@ -50,6 +50,7 @@ The compiler supports:
 > NOTE: If you're on Linux, you can usually get these from your package manager (E.g., apt, dnf, aur, etc).
 1.  **[Python 3.x](https://www.python.org/downloads/)** installed and added to your system PATH.
 2.  **[FFmpeg](https://ffmpeg.org/download.html)** installed and added to your system PATH (used for video and audio extraction).
+3.  **[Git](https://git-scm.com/install/)** installed and added to your system PATH.
 ### Setup
 > NOTE: Vector Video was developed for, and on Fedora 44 (Linux). But it should still work on other systems.
 1. Clone the repository.
