@@ -3,11 +3,11 @@
  
 Vector Video is a high-quality, performant long-form video player built for vanilla Scratch3 VMs. It utilizes the costume renderer along with some clever tricks to get video as high as 360p@30 for minutes (or hours) on end!
 
-<img width="196" height="210" alt="SYTEM-Blank-2x" src="https://github.com/user-attachments/assets/a9c07d4d-eedd-4e20-a516-eaabdd5f1d10" />
+<img width="196" height="210" alt="VV, Vector Video's mascot" src="https://github.com/user-attachments/assets/a9c07d4d-eedd-4e20-a516-eaabdd5f1d10" />
 
-https://github.com/user-attachments/assets/f48afc15-c654-4840-8d5d-1e94ec6d465c
+https://github.com/user-attachments/assets/6499a0ec-15b4-4be0-bfc2-66079a5844e8
 
-**Anonymous_cat1 is not responsible for any action taken by the Scratch website or the Scratch Team that could result from uploading copyrighted/illegal content. Nor any damage caused by the compiler or client if it breaks.**
+**Anonymous_cat1 is not responsible for any action taken by the Scratch website or the Scratch Team that could result from uploading copyrighted/illegal content. Nor any damage caused by the compiler or client.**
 ## Index
 - [Client](#client)
 - [Compiler](#compiler)
@@ -21,7 +21,7 @@ https://github.com/user-attachments/assets/f48afc15-c654-4840-8d5d-1e94ec6d465c
 - [Help Me!](#help-me)
 
 ## Client
-> NOTE: Some versions of the client included a RAM crash script to thwart false reports. This script has been removed from the public release of the client.
+> NOTE: Some versions of the client included a RAM crash script to thwart false reports. This script is removed from the public client.
 
 > COMPATIBILITY NOTE: Turbowarp does not play nice with the weird timing tricks the client uses. For better performance, you must disable `Warp Timer` and enable `Disable Compiler`.
 
@@ -74,11 +74,11 @@ python main.py input_video.mp4
 ```
 To compile a video using the auto compiler:
 ```bash
-python3 main.py input_video.mp4  -c
+python main.py input_video.mp4  -c
 ```
 To compile an entire folder of videos in a batch, just pass a folder.
 ```bash
-python3 main.py ./my_videos/
+python main.py ./my_videos/
 ```
 ### Example Commands
 A command example for films:
@@ -88,7 +88,7 @@ python main.py 'path/to/movie.mp4' -f 12 -w 220* -m -c -e
 # Width is set to the most efficient resolution around 220p (note the *)
 # Mono audio
 # Use the auto compiler
-# Use with esitmator (does not convert entire video)
+# Use with estimator (does not convert entire video)
 ```
 A command example for short animated content:
 ```bash
@@ -117,7 +117,7 @@ To use the (resource) estimator, append `-e`/`--estimator`.
 python main.py input_video.mp4 -e
 ```
 You should see something like this (with added notes):
-> NOTE: The estimator cannot be 100% accurate, but it should give you a good reference on how your video looks.
+> NOTE: The estimator cannot be 100% accurate, but it should give you a good reference for how your video looks.
 ```bash
 =============
 Specs:
@@ -152,7 +152,7 @@ The compiler supports a wide variety of flags to optimize and customize your out
 
 ---
 ### Resolution & Framing
-> "`*`" OPTIMIZER: If you append an asterisk to the width (e.g. `-w 240*`), the compiler will intelligently scan a range +/- 25% around your requested width. It will calculate the mathematically perfect resolution that completely maximizes the atlas packing space while wasting the absolute minimum amount of alignment padding (highly recommended!)
+> "`*`" OPTIMIZER: If you append an asterisk to the width (e.g., `-w 240*`), the compiler will intelligently scan a range +/- 25% around your requested width. It will calculate the mathematically perfect resolution that completely maximizes the atlas packing space while wasting the absolute minimum amount of alignment padding (highly recommended!)
 -  `-w`/`--width <width>`: Set the target frame width (default: 240).
 -  `-s`/`--stretch`: Stretch the video to force a 4:3 aspect ratio (fits the Scratch stage exactly without letterboxing).
 ### Quality & Performance
@@ -173,7 +173,7 @@ The compiler supports a wide variety of flags to optimize and customize your out
 -  `-n`/`--no-open`: Do not automatically open the Export folder when finished.
 -  `-v`/`--verbose`: Enable verbose debugging logs.
 ## Uploading
-> NOTE: Uploading works best on Chromium-based browsers (E.g., Brave, Edge, Chrome, etc).
+> NOTE: Uploading works best on Chromium-based browsers (E.g., Brave, Edge, Chrome, etc.)
  
 > PERFORMANCE ADVISORY: On systems with low RAM, uploading more than 1,000 costumes can crash your browser!
 You can upload Vector Video projects in two ways:
@@ -202,7 +202,7 @@ This requires you to upload a blank `_VVPlayer_base` project to scratch and do t
 6. **Before sharing,** make sure the `_VVPlayer Preloaded Frames?` var is set to `0`. Otherwise, preloading will not work.
 ## System Requirements
 The compiler requires:
-- A system with a multi-core CPU (basically anything past the late 2000's). The faster your CPU is, the faster the compiler goes.
+- A system with a multi-core CPU (basically anything past the late 2000s). The faster your CPU is, the faster the compiler goes.
 - At least 4 GB of RAM
 - At least 1 GB of free space (to hold exports).
 ## Limitations
