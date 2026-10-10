@@ -76,6 +76,10 @@ def extract_audio_chunk(video_path, start_time, out_file, bitrate, khz, volume, 
         filters.append(f'volume={volume}')
     if use_limiter:
         filters.append('alimiter=limit=-0.1dB')
+    
+    # Micro fade in/out to eliminate chunk boundary popping
+    filters.append('afade=t=in:ss=0:d=0.005')
+    filters.append('afade=t=out:st=14.995:d=0.005')
         
     if filters:
         cmd.extend(['-filter:a', ','.join(filters)])
@@ -112,6 +116,9 @@ def extract_audio(video_path, export_audio_dir, bitrate="64k", khz="22050", thre
         filters.append(f'volume={volume}')
     if use_limiter:
         filters.append('alimiter=limit=-0.1dB')
+    
+    # Smooth boundaries on chunk cuts to prevent DC offset clicks/pops
+    filters.append('afade=t=in:ss=0:d=0.005')
         
     if filters:
         cmd.extend(['-filter:a', ','.join(filters)])

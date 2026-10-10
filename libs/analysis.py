@@ -25,7 +25,7 @@ def dhash(image, hash_size=16):
     for i, b in enumerate(diff.flatten()):
         if b:
             h |= (1 << i)
-    return h
+    return int(h)
 
 def determine_scale(img, img_prev, detail_sensitivity):
     """
@@ -42,13 +42,13 @@ def determine_scale(img, img_prev, detail_sensitivity):
     # Using the 98th percentile of Laplacian magnitude entirely ignores flat backgrounds 
     # (like large solid-color skies) and strictly measures the sharpest objects/focal points.
     lap_abs = np.abs(cv2.Laplacian(gray, cv2.CV_64F))
-    focal_sharpness = np.percentile(lap_abs, 98)
+    focal_sharpness = float(np.percentile(lap_abs, 98))
     
     # 2. Motion Dependency
-    motion = 0
+    motion = 0.0
     if img_prev is not None:
         gray_prev = cv2.cvtColor(img_prev, cv2.COLOR_BGR2GRAY)
-        motion = np.mean(cv2.absdiff(gray, gray_prev))
+        motion = float(np.mean(cv2.absdiff(gray, gray_prev)))
         
     # Heuristic: 
     # High focal_sharpness -> higher scale (preserve detailed focal points)
@@ -58,20 +58,20 @@ def determine_scale(img, img_prev, detail_sensitivity):
     # We use a tapered curve to detect scene cuts:
     # Mean pixel differences > 30 are typically scene changes, not just fast motion.
     # We rapidly taper off the motion penalty for these so new scenes are crisp.
-    if motion > 30:
-        motion_penalty = max(0, 30 - (motion - 30) * 1.5) * 0.75
+    if motion > 30.0:
+        motion_penalty = max(0.0, 30.0 - (motion - 30.0) * 1.5) * 0.75
     else:
         motion_penalty = motion * 0.75
         
     score = (focal_sharpness * 2.5) - motion_penalty
     
     # Base buffer ensures flat scenes without motion don't drop to absolute zero instantly.
-    target_scale = ((max(0, score) + 15) * detail_sensitivity) / 100.0
+    target_scale = ((max(0.0, score) + 15.0) * float(detail_sensitivity)) / 100.0
     
     # Quantize to increments of 0.05 to eliminate micro-jitter and stabilize aspect ratios
-    target_scale = round(target_scale * 20) / 20.0
+    target_scale = round(target_scale * 20.0) / 20.0
     
-    return max(0.15, min(1.0, target_scale))
+    return float(max(0.15, min(1.0, target_scale)))
 
 def process_frame_for_analysis(args):
     idx, frame_data, prev_frame_data, base_w, base_h, max_w, max_h, detail_sensitivity = args
@@ -147,7 +147,7 @@ def analyze_frames(frame_list, base_w, base_h, max_w, max_h, detail_sensitivity=
         
         # Local deduplication: check against the LAST unique frame only to prevent false positives
         for uh, uidx in unique_hashes[-1:]:
-            dist = (h ^ uh).bit_count()
+            dist = int(int(h) ^ int(uh)).bit_count()
             if dist <= int(dedup_tolerance):
                 is_dup = True
                 duplicate_ref = uidx
@@ -160,7 +160,7 @@ def analyze_frames(frame_list, base_w, base_h, max_w, max_h, detail_sensitivity=
             results[i]["h"] = results[duplicate_ref]["h"]
             duplicates_found += 1
         else:
-            unique_hashes.append((h, i))
+            unique_hashes.append((int(h), i))
             
     logger.info(f"Analysis complete. Found {duplicates_found} duplicate frames out of {len(frame_list)}.")
     # Filter out None results
